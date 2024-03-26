@@ -1,13 +1,26 @@
 package tdd.mission;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class VendingMachine {
 
-    public int generateRandomCoin() {
-        int[] coins = {10, 50, 100, 500, 1000};
-        Random random = new Random();
-        int index = random.nextInt(coins.length);
-        return coins[index];
+    public Map<Coin, Integer> generateCoins(int amount) {
+        Map<Coin, Integer> coinMap = new HashMap<>();
+        int remainingAmount = amount;
+
+        while (remainingAmount > 0) {
+            Coin[] coins = Coin.values();
+            Coin coin = coins[new Random().nextInt(coins.length)];
+            int coinValue = coin.getAmount();
+            if (remainingAmount >= coinValue) {
+                int numCoins = remainingAmount / coinValue;
+                coinMap.put(coin, numCoins);
+                remainingAmount %= coinValue;
+            }
+        }
+
+        return coinMap;
     }
 }
