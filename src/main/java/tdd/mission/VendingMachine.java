@@ -1,10 +1,9 @@
 package tdd.mission;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class VendingMachine {
+    private List<Product> products;
 
     public Map<Coin, Integer> generateCoins(int amount) {
         Map<Coin, Integer> coinMap = new HashMap<>();
@@ -22,5 +21,17 @@ public class VendingMachine {
         }
 
         return coinMap;
+    }
+
+    public VendingMachine() {
+        this.products = new ArrayList<>();
+    }
+
+    public void addProduct(Product product) {
+        products.add(product);
+    }
+
+    public List<Product> getProducts() {
+        return products;
     }
 }
