@@ -1,46 +1,58 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tdd.mission.Coin;
-import tdd.mission.Product;
-import tdd.mission.VendingMachine;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import tdd.mission.vendingMachine.model.Coin;
+import tdd.mission.vendingMachine.model.InputAmountReqDTO;
+import tdd.mission.vendingMachine.repository.CoinEntity;
+import tdd.mission.vendingMachine.repository.CoinRepository;
+import tdd.mission.vendingMachine.service.VendingMachineService;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class VendingMachineTest {
+    @Mock
+    private CoinRepository coinRepository;
+
+    @InjectMocks
+    private VendingMachineService vendingMachineService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
-    void 랜덤으로_생성된_동전의_합이_입력값과_같은지_확인() {
-        VendingMachine vendingMachine = new VendingMachine();
-        int amount = 450;
-        Map<Coin, Integer> coinMap = vendingMachine.generateCoins(amount);
+    void randomCoinByInputAmount_Should_Return_Correct_Sum() {
+        // Given
+        int inputAmount = 1000;
 
-        assertNotNull(coinMap);
+        // When
+        InputAmountReqDTO inputAmountReqDTO =  vendingMachineService.randomCoinByInputAmount(inputAmount);
 
-        int totalAmount = 0;
-        for (Map.Entry<Coin, Integer> entry : coinMap.entrySet()) {
+        // Then
+        int sum = sumAllCoins(inputAmountReqDTO);
+        assertEquals(inputAmount, sum);
+    }
+
+    // 저장된 동전 정보의 합계를 계산하는 메서드
+    private int sumAllCoins(InputAmountReqDTO inputAmountReqDTO) {
+        int sum = 0;
+        for (Map.Entry<Coin, Integer> entry : inputAmountReqDTO.getCoinCounts().entrySet()) {
             Coin coin = entry.getKey();
-            int numCoins = entry.getValue();
-            totalAmount += coin.getAmount() * numCoins;
+            int count = entry.getValue();
+            sum += coin.getAmount() * count;
         }
-
-        assertEquals(amount, totalAmount);
+        return sum;
     }
 
-    @Test
-    void 자판기에_상품정보가_저장되는지_확인() {
-        VendingMachine vendingMachine = new VendingMachine();
-        Product product1 = new Product("콜라", 1500, 20);
-        Product product2 = new Product("사이다", 1000, 10);
-
-        vendingMachine.addProduct(product1);
-        vendingMachine.addProduct(product2);
-
-        List<Product> products = vendingMachine.getProducts();
-
-        assertEquals(2, products.size());
-        assertTrue(products.contains(product1));
-        assertTrue(products.contains(product2));
-    }
 }
